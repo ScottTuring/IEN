@@ -1,0 +1,32 @@
+main.cpp: 
+	一.是ndn和ip网络的桥梁,通过指定的http命令,例如:
+	curl -X POST -H "Content-Type: application/json" -d '{"name": "'"your_name_value"'", "data": "'"your_data_value"'"}' http://localhost:8000/peekData
+      可以将数据保存在本地并以指定前缀推送到ndn网络中,默认前缀为 /ien+计数器值,第一条数据前缀为/ien1,第二条前缀为/ien2,以此类推
+
+	二.提供本机数据读取功能,路径默认为当前目录,示例:
+	curl -s "http://localhost:8000/getfile?filename=ien$suffix.txt
+
+main1.cpp:
+	相较于main.cpp少了推送至ndn网络的功能,其余相同
+
+sendIpWithTime.sh:
+    用于向指定主机发送ip请求,并将数据保存到当前目录下,运行方法为 ./sendIpWithTime.sh $1,/ien+$1为请求文件名
+    主机ip需要在第33行:  output=$(curl -s "http://54.222.180.228:8000/getfile?filename=ien$suffix.txt")
+中修改ip为指定ip
+
+getIP.sh
+	获取使用sendIpWithTime.sh保存文件中的时间戳,运行方法为 ./getIP.sh $1, /ien+$1为查找文件名
+
+sendInterestWithTime.sh
+	用于ndn网络中发送指定前缀的interest包并将数据保存到本地,, 用法为./sendInterestWithTime.sh $1, /ien+$1为前缀名
+
+getTime.sh
+	获取使用sendInterestWithTime.sh保存文件中的时间戳,运行方法为 ./getIP.sh $1, /ien+$1为查找文件名
+
+kill.sh
+	用于kill指定端口范围内的进程,范围通过修改文件中的start_port,end_port参数
+
+getLog.sh
+	用于分析链上节点的日志,会提取最近一次区块广播的日志,使用的查找特征值分别为sending prePrepare和received prePrepare
+	需要按需配置服务器ip并提前配置好运行脚本的本机能够ssh免密登陆其它服务器
+	收集好的日志会按时间排序后存在当前目录下的broadcast_logs_sorted.txt和receive_logs_sorted.txt下
